@@ -1,10 +1,19 @@
 import { db } from "hatchable";
 export const access = "user";
-export const methods = ["GET","POST"];
+export const methods = ["GET","POST","DELETE"];
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export default async function(req,res) {
  const uid=req.user.id;
  try {
+  if(req.method==="DELETE") {
+   const recipeId=String((req.body||{}).id||"");
+   if(!UUID.test(recipeId)) return res.status(400).json({error:"A valid recipe id is required."});
+   const found=await db.query("SELECT food_id FROM recipes WHERE user_id=$1 AND id=$2",[uid,recipeId]);
+   if(!found.rows.length) return res.status(404).json({error:"Recipe not found."});
+   await db.query("DELETE FROM recipes WHERE user_id=$1 AND id=$2",[uid,recipeId]);
+   await db.query("DELETE FROM food_catalog WHERE id=$1 AND user_id=$2",[found.rows[0].food_id,uid]);
+   return res.json({ok:true});
+  }
   if(req.method==="GET") {
    const id=String(req.query.id||"");
    const q=id?await db.query("SELECT * FROM recipes WHERE user_id=$1 AND id=$2",[uid,id]):await db.query("SELECT * FROM recipes WHERE user_id=$1 ORDER BY created_at DESC LIMIT 100",[uid]);
