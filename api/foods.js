@@ -1,9 +1,14 @@
 import { db } from "hatchable";
 export const access = "user";
-export const methods = ["GET","POST"];
+export const methods = ["GET","POST","DELETE"];
 export default async function(req,res) {
   const userId=req.user.id;
   try {
+    if(req.method==="DELETE") {
+      const id=String((req.body||{}).id||"");
+      const q=await db.query("DELETE FROM food_catalog WHERE id=$1 AND user_id=$2 AND recipe_id IS NULL RETURNING id",[id,userId]);
+      return q.rowCount ? res.json({ok:true}) : res.status(404).json({error:"Custom food not found or it belongs to a saved recipe."});
+    }
     if(req.method==="POST") {
       const b=req.body||{}, name=String(b.name||"").trim().slice(0,100);
       const calories=Number(b.calories), protein=Number(b.protein||0), carbs=Number(b.carbs||0), fat=Number(b.fat||0), fiber=Number(b.fiber||0), grams=Number(b.serving_grams||100);
