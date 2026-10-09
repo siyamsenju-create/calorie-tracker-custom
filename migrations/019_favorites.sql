@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS favorites (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), user_id TEXT NOT NULL, food_id UUID NOT NULL REFERENCES food_catalog(id) ON DELETE CASCADE, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), UNIQUE(user_id,food_id));

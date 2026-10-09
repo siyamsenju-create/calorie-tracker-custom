@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS idx_favorites_user_date ON favorites(user_id,created_at DESC);

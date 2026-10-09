@@ -18,6 +18,10 @@ write = "own"
 read = "own"
 write = "own"
 
+[db.tables.favorites]
+read = "own"
+write = "own"
+
 [db.tables.profiles]
 read = "own"
 write = "own"
