@@ -1,0 +1,1 @@
+ALTER TABLE food_catalog ADD COLUMN IF NOT EXISTS user_id TEXT

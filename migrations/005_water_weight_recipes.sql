@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS water_logs (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), user_id TEXT NOT NULL, amount_ml INTEGER NOT NULL CHECK (amount_ml > 0), log_date DATE NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now())

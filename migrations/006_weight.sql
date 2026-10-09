@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS weight_logs (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), user_id TEXT NOT NULL, weight_kg NUMERIC NOT NULL CHECK (weight_kg > 0 AND weight_kg < 500), logged_at TIMESTAMPTZ NOT NULL DEFAULT now(), log_date DATE NOT NULL)

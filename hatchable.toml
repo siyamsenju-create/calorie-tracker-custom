@@ -1,0 +1,7 @@
+name = "CalorieTrack AI"
+tagline = "Indian food. Real-life tracking."
+
+[auth]
+enabled = true
+providers = ["email"]
+signup = "open"

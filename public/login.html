@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#f7f7f2"><title>Sign in · CalorieTrack AI</title><link rel="stylesheet" href="/theme.css">
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at 15% 15%,#e9efe4 0,transparent 40%),#f7f7f2;color:#263227;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.login-layout{width:100%;max-width:850px;display:grid;grid-template-columns:1fr 1fr;overflow:hidden;background:#fff;border:1px solid #e5e9df;border-radius:25px;box-shadow:0 28px 90px #263b2814}.story-panel{background:#315b3e;color:#fff;padding:36px;display:flex;flex-direction:column;justify-content:space-between;min-height:520px;position:relative;overflow:hidden}.story-panel:after{content:"";position:absolute;width:370px;height:370px;border:1px solid #ffffff20;border-radius:50%;right:-180px;bottom:-170px;box-shadow:0 0 0 35px #ffffff08,0 0 0 70px #ffffff05}.brand{display:flex;align-items:center;gap:11px;font-size:17px;font-weight:800;letter-spacing:-.5px;position:relative;z-index:1}.brand-mark{width:39px;height:39px;display:grid;place-items:center;background:#fff;color:#315b3e;border-radius:13px;font:bold italic 25px Georgia,serif}.brand-light{font-weight:500;color:#cfdcce}.story-copy{position:relative;z-index:1;margin:45px 0}.kicker{font-size:9px;letter-spacing:2px;font-weight:800;color:#c5d5c3}.story-copy h1{font-size:36px;letter-spacing:-1.8px;line-height:1.1;margin:14px 0}.story-copy h1 em{font-family:Georgia,serif;font-weight:500;color:#f0b182}.story-copy p{font-size:12px;line-height:1.9;color:#d5e0d3;max-width:290px}.story-foot{font-size:10px;color:#c5d5c3;position:relative;z-index:1}.login-panel{padding:45px 36px;display:flex;flex-direction:column;justify-content:center}.login-panel h2{font-size:25px;letter-spacing:-1px;margin:0 0 9px}.subtitle{font-size:12px;color:#7e897c;line-height:1.65;margin:0 0 27px}.field-label{display:block;font-size:11px;color:#5e6b5b;font-weight:750;margin-bottom:8px}input,button{width:100%;font:inherit;min-height:46px;border-radius:10px}input{border:1px solid #dfe5da;background:#fbfcf9;padding:0 13px;color:#253227;outline:none;font-size:13px}input:focus{border-color:#82a487;box-shadow:0 0 0 3px #e5efe3}button{border:0;background:#315b3e;color:#fff;font-weight:750;font-size:12px;margin-top:11px;cursor:pointer;transition:background .15s}button:hover{background:#254a31}button:disabled{opacity:.55;cursor:wait}.alt{background:transparent;color:#6c7a69;font-weight:650;border:1px solid #e1e7dd}.alt:hover{background:#f7f9f4;color:#315b3e}.message{font-size:11px;line-height:1.6;color:#71806e;min-height:36px;margin:12px 0 0}.message.error{color:#a34b3a}.fine-print{font-size:10px;color:#9aa396;line-height:1.7;margin-top:17px}.passkey-panel{padding-top:5px}.passkey-panel p{font-size:12px;line-height:1.75;color:#778274}.login-footer{display:none}
+@media(max-width:650px){body{padding:0;display:block;min-height:100dvh;background:#f7f7f2}.login-layout{min-height:100dvh;display:flex;flex-direction:column;border:0;border-radius:0;box-shadow:none;background:transparent}.story-panel{min-height:0;padding:18px 22px 26px;border-radius:0 0 25px 25px;flex:0 0 auto}.story-panel .story-copy{margin:30px 0 10px}.story-copy h1{font-size:29px;margin:10px 0}.story-copy p{margin-bottom:2px;max-width:360px}.story-foot{display:none}.login-panel{padding:28px 23px 34px;flex:1}.login-panel h2{font-size:23px}.subtitle{margin-bottom:22px}.login-footer{display:block;font-size:10px;text-align:center;color:#9aa396;margin:0 0 20px}.story-panel:after{width:240px;height:240px;right:-155px;bottom:-155px}.fine-print{margin-top:13px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="login-layout">
+<section class="story-panel"><div class="brand"><span class="brand-mark">c</span><span>calorie<span class="brand-light">track</span></span></div><div class="story-copy"><span class="kicker">INDIAN FOOD. EVERYDAY WELLNESS.</span><h1>Understand your plate.<br><em>Find your balance.</em></h1><p>Track the foods you love, the movement you make, and your own progress — one small step at a time.</p></div><div class="story-foot">A gentler way to know your numbers · ✳</div></section>
+<main class="login-panel">
+<div id="email-view"><h2>Welcome back</h2><p class="subtitle">Sign in with a one-time email code. No password to remember.</p><form id="login-form"><label class="field-label" for="email">Email address</label><input id="email" type="email" autocomplete="username webauthn" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="you@example.com" required><button id="send" type="submit">Continue with email</button></form><button id="try-passkey" class="alt" type="button" hidden>Sign in with a passkey</button><p class="message" id="message" role="status" aria-live="polite"></p><p class="fine-print">By continuing, you create or access your personal tracking account. Your daily records are associated with your sign-in.</p></div>
+<div id="code-view" hidden><h2>Check your inbox</h2><p class="subtitle" id="code-sub">Enter the 6-digit code we emailed you.</p><form id="verify-form"><label class="field-label" for="code">One-time code</label><input id="code" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="123456" required><button id="verify" type="submit">Verify and sign in</button><button id="back" class="alt" type="button">Use another email</button></form><p class="message" id="code-message" role="status" aria-live="polite"></p></div>
+<div id="passkey-view" class="passkey-panel" hidden><h2>Make next time easier</h2><p>Your account is ready. Add a passkey so you can sign in with Face ID, Touch ID, a fingerprint or your device's screen lock next time.</p><button id="add-passkey" type="button">Set up a passkey</button><button id="skip-passkey" class="alt" type="button">Not now</button><p class="message" id="passkey-message" role="status" aria-live="polite"></p></div>
+<div class="login-footer">CalorieTrack AI · Small steps count.</div>
+</main></div>
+<script>
+(function(){
+ const A=window.hatchable&&window.hatchable.auth;
+ const $=id=>document.getElementById(id);
+ const email=$("email"),code=$("code"),message=$("message"),codeMessage=$("code-message"),passkeyMessage=$("passkey-message");
+ const emailView=$("email-view"),codeView=$("code-view"),passkeyView=$("passkey-view");
+ let lastEmail="",hasPasskey=false;
+ function safeNext(){const n=new URLSearchParams(location.search).get("next")||"/";return n.charAt(0)==="/"&&n.slice(0,2)!=="//"?n:"/";}
+ function go(){location.replace(safeNext());}
+ function say(el,text,error){el.textContent=text||"";el.className="message"+(error?" error":"");}
+ function declined(){try{return localStorage.getItem("ct_passkey_declined")==="1";}catch(e){return false;}}
+ function decline(){try{localStorage.setItem("ct_passkey_declined","1");}catch(e){}}
+ function finish(){if(!hasPasskey&&A.supportsPasskeys&&A.supportsPasskeys()&&!declined()){emailView.hidden=true;codeView.hidden=true;passkeyView.hidden=false;}else go();}
+ if(!A){say(message,"Sign-in is not ready. Refresh the page and try again.",true);$("send").disabled=true;return;}
+ A.getSession().then(s=>{if(s&&s.user)go();}).catch(()=>{});
+ if(A.attachPasskeyAutofill){try{A.attachPasskeyAutofill(email).then(r=>{if(r&&r.user)go();}).catch(()=>{});}catch(e){}}
+ $("login-form").addEventListener("submit",async e=>{
+  e.preventDefault();lastEmail=email.value.trim();if(!lastEmail){say(message,"Enter a valid email address.",true);return;}
+  const button=$("send");button.disabled=true;say(message,"Sending your sign-in code…",false);
+  try{const r=await A.startLogin({email:lastEmail});hasPasskey=!!(r&&r.has_passkey);
+   if(hasPasskey&&A.supportsPasskeys&&A.supportsPasskeys()){
+    try{const s=await A.signInWithPasskey({email:lastEmail});if(s&&s.user){go();return;}}catch(e){}
+   }
+   emailView.hidden=true;codeView.hidden=false;$("code-sub").textContent="Enter the 6-digit code sent to "+lastEmail+".";say(codeMessage,"The code is on its way. Check your inbox and spam folder.",false);code.focus();
+  }catch(err){say(message,err&&err.status===429?"Too many attempts. Wait a moment and try again.":(err.message||"Could not send the code. Check your email and try again."),true);}
+  finally{button.disabled=false;}
+ });
+ $("verify-form").addEventListener("submit",async e=>{
+  e.preventDefault();const b=$("verify");b.disabled=true;say(codeMessage,"Verifying your code…",false);
+  try{const r=await A.verifyCode({email:lastEmail,code:code.value.trim()});if(r&&r.user){finish();return;}say(codeMessage,"That code didn't work. Try again.",true);}
+  catch(err){say(codeMessage,err.message||"That code didn't work. Try again.",true);}
+  finally{b.disabled=false;}
+ });
+ $("back").addEventListener("click",()=>{codeView.hidden=true;emailView.hidden=false;code.value="";say(message,"");email.focus();});
+ $("add-passkey").addEventListener("click",async()=>{const b=$("add-passkey");b.disabled=true;$("skip-passkey").disabled=true;say(passkeyMessage,"Follow your device's security prompt to save a passkey.",false);try{const r=await A.registerPasskey();if(!r)decline();go();}catch(err){b.disabled=false;$("skip-passkey").disabled=false;say(passkeyMessage,err.message||"Passkey setup failed. You can still continue.",true);}});
+ $("skip-passkey").addEventListener("click",()=>{decline();go();});
+ email.focus();
+})();
+</script>
+</body></html>

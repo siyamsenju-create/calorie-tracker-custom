@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f7f2">
+  <meta name="description" content="CalorieTrack AI — Indian food and everyday fitness tracking, designed for real life.">
+  <title>CalorieTrack AI — Daily wellness</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#" data-page-link="home" aria-label="CalorieTrack AI home"><span class="brand-mark">c</span><span>calorie<span class="brand-light">track</span><small>INDIAN FOOD & FITNESS</small></span></a>
+      <p class="nav-label">YOUR SPACE</p>
+      <nav class="side-nav">
+        <button class="nav-item active" data-page-link="home"><span class="nav-ico">◫</span>Overview</button>
+        <button class="nav-item" data-page-link="diary"><span class="nav-ico">☷</span>Food diary</button>
+        <button class="nav-item" data-page-link="activity"><span class="nav-ico">↗</span>Activity</button>
+        <button class="nav-item" data-page-link="progress"><span class="nav-ico">⌁</span>Progress</button>
+        <button class="nav-item" data-page-link="profile"><span class="nav-ico">◎</span>My profile</button>
+      </nav>
+      <div class="sidebar-note"><div class="leaf">✳</div><strong>Small steps count.</strong><p>Build a habit, not a perfect day.</p></div>
+      <button class="signout-btn" id="signout"><span>↪</span> Sign out</button>
+      <div class="sidebar-footer">Made for your everyday plate <span>♥</span></div>
+    </aside>
+
+    <main class="main-content">
+      <header class="mobile-header">
+        <a class="brand" href="#" data-page-link="home"><span class="brand-mark">c</span><span>calorie<span class="brand-light">track</span></span></a>
+        <button class="icon-button" id="mobile-signout" aria-label="Sign out">↪</button>
+      </header>
+      <div class="topbar">
+        <div><div class="eyebrow" id="today-label">YOUR DAILY CHECK-IN</div><div class="date-line" id="date-line">Today, —</div></div>
+        <div class="top-actions"><button class="date-button" id="date-button" title="Choose a diary date">▦ <span id="pretty-date">Today</span></button><input id="day-picker" class="visually-hidden-date" type="date" aria-label="Select tracking date"><div class="avatar" id="avatar">C</div></div>
+      </div>
+
+      <section class="page active" id="page-home">
+        <div class="welcome-row"><div><p class="eyebrow">YOUR HEALTH, AT YOUR PACE</p><h1>Good things start <em>today.</em></h1><p class="muted" id="welcome-subtitle">A little awareness goes a long way.</p></div><button class="primary-button desktop-add" id="add-food-top"><span>＋</span> Log food</button></div>
+        <div class="dashboard-grid">
+          <article class="calorie-hero">
+            <div class="hero-heading"><div><span class="hero-kicker">DAILY INTAKE</span><h2>Calories <span>in</span></h2></div><span class="day-tag" id="hero-day-tag">TODAY</span></div>
+            <div class="calorie-visual-row">
+              <div class="ring-wrap">
+                <svg class="progress-ring" viewBox="0 0 150 150" role="img" aria-label="Daily calorie goal progress"><circle class="ring-track" cx="75" cy="75" r="63"></circle><circle class="ring-value" id="calorie-ring" cx="75" cy="75" r="63"></circle></svg>
+                <div class="ring-center"><strong id="calories-eaten">0</strong><span>kcal eaten</span></div>
+              </div>
+              <div class="hero-numbers"><div><span class="dot dot-light"></span><div><small>Daily goal</small><strong id="calorie-goal">2,000 <i>kcal</i></strong></div></div><div><span class="dot dot-orange"></span><div><small>Still available</small><strong id="calories-left">2,000 <i>kcal</i></strong></div></div></div>
+            </div>
+            <div class="hero-foot"><span id="calorie-progress-copy">A fresh start. Log your first meal.</span><span id="calorie-percent">0%</span></div>
+            <div class="hero-track"><span id="calorie-bar"></span></div>
+          </article>
+          <article class="burn-card">
+            <div class="card-top"><span class="small-icon orange">↗</span><span class="card-kicker">MOVE YOUR WAY</span></div>
+            <p class="stat-number" id="burned-calories">0 <small>kcal</small></p><h3>Exercise burn</h3><p class="muted small-copy">Estimated or entered from your device.</p>
+            <button class="text-link" data-page-link="activity">Add activity <span>→</span></button>
+          </article>
+          <article class="burn-card expenditure-card">
+            <div class="card-top"><span class="small-icon green">⌁</span><span class="card-kicker">ENERGY OUT</span></div>
+            <p class="stat-number" id="tdee-number">— <small>kcal</small></p><h3>Estimated daily burn</h3><p class="muted small-copy" id="tdee-caption">Add your profile details to estimate your energy needs.</p>
+            <button class="text-link" data-page-link="profile">Set up profile <span>→</span></button>
+          </article>
+        </div>
+
+        <div class="section-head"><div><p class="eyebrow">THE BALANCE</p><h2>Nutrition at a glance</h2></div><button class="subtle-button" data-page-link="diary">View diary <span>→</span></button></div>
+        <div class="nutrition-grid">
+          <article class="nutrition-card"><div class="macro-top"><span class="macro-icon protein">P</span><span class="macro-label">PROTEIN</span></div><div class="macro-value"><strong id="protein-value">0 g</strong><span id="protein-goal-copy">of 100 g</span></div><div class="macro-track"><span id="protein-bar" class="protein-fill"></span></div></article>
+          <article class="nutrition-card"><div class="macro-top"><span class="macro-icon carbs">C</span><span class="macro-label">CARBS</span></div><div class="macro-value"><strong id="carbs-value">0 g</strong><span id="carbs-goal-copy">of 250 g</span></div><div class="macro-track"><span id="carbs-bar" class="carbs-fill"></span></div></article>
+          <article class="nutrition-card"><div class="macro-top"><span class="macro-icon fat">F</span><span class="macro-label">FAT</span></div><div class="macro-value"><strong id="fat-value">0 g</strong><span id="fat-goal-copy">of 65 g</span></div><div class="macro-track"><span id="fat-bar" class="fat-fill"></span></div></article>
+          <article class="nutrition-card water-card"><div class="water-card-head"><span class="water-drop">滴</span><div><span class="macro-label">WATER</span><div class="macro-value"><strong id="water-value">0 ml</strong><span id="water-goal-copy">of 2,500 ml</span></div></div></div><div class="macro-track"><span id="water-bar" class="water-fill"></span></div><div class="water-quick"><button data-water="250">+250 ml</button><button data-water="500">+500 ml</button></div></article>
+        </div>
+
+        <div class="section-head meal-section-heading"><div><p class="eyebrow">MADE OF MOMENTS</p><h2>Today's food diary</h2></div><button class="primary-button compact" id="add-food-main"><span>＋</span> Add food</button></div>
+        <div id="home-meals" class="meal-list"></div>
+        <div class="energy-note" id="energy-note"><span class="note-symbol">i</span><p><strong>Know your numbers.</strong> Food calories and exercise burn are estimates. “Daily burn” combines an estimated baseline with logged exercise, so your energy balance is a guide—not a medical measurement.</p></div>
+      </section>
+
+      <section class="page" id="page-diary">
+        <div class="page-title-row"><div><p class="eyebrow">EVERY BITE TELLS A STORY</p><h1>Your food diary</h1><p class="muted">Indian meals, everyday portions, all in one place.</p></div><button class="primary-button" id="diary-add-food"><span>＋</span> Add food</button></div>
+        <div class="diary-summary" id="diary-summary"></div>
+        <div id="diary-meals" class="meal-list diary-meals"></div>
+        <div class="help-note"><span>✳</span><p>Values are approximate for a typical serving. Cooking oil, ghee, ingredients and portion size can change the real calories.</p></div>
+      </section>
+
+      <section class="page" id="page-activity">
+        <div class="page-title-row"><div><p class="eyebrow">FIND YOUR KIND OF MOVEMENT</p><h1>Activity tracker</h1><p class="muted">Every walk, workout and stretch adds up.</p></div></div>
+        <div class="activity-summary-grid"><article class="activity-highlight"><span class="card-kicker">EXERCISE CALORIES</span><strong id="activity-total-burn">0 <small>kcal</small></strong><p id="activity-minutes-total">0 minutes logged today</p></article><article class="activity-highlight light-highlight"><span class="card-kicker">MOVEMENT LOGS</span><strong id="activity-count">0</strong><p>activities completed today</p></article></div>
+        <div class="form-card"><div class="form-heading"><div class="small-icon orange">↗</div><div><h2>Log an activity</h2><p>Choose an activity and we'll estimate the energy used.</p></div></div>
+          <form id="activity-form" class="form-grid">
+            <label class="field full-field">Activity<select name="activity" required><option value="Walking">Walking</option><option value="Running">Running</option><option value="Cycling">Cycling</option><option value="Strength training">Strength training</option><option value="Gym">Gym workout</option><option value="Swimming">Swimming</option><option value="Yoga">Yoga</option><option value="Sports">Sports</option><option value="Other">Other</option></select></label>
+            <label class="field">Duration (minutes)<input name="minutes" type="number" min="1" max="1440" value="30" required></label>
+            <label class="field">Intensity<select name="intensity"><option value="light">Light</option><option value="moderate" selected>Moderate</option><option value="vigorous">Vigorous</option></select></label>
+            <label class="field">Distance (km)<input name="distance_km" type="number" min="0" max="1000" step=".1" placeholder="Optional"></label>
+            <label class="field">Calories burned<input name="calories" type="number" min="0" max="10000" placeholder="Auto-estimate"></label>
+            <p class="field-hint full-field">Leave calories blank for a MET-based estimate. Enter the number from a fitness device or machine to use your measured value instead.</p>
+            <button type="submit" class="primary-button full-field">＋ Save activity</button>
+          </form>
+        </div>
+        <div class="section-head"><div><p class="eyebrow">KEEP THE MOMENTUM</p><h2>Today's movement</h2></div></div><div id="activity-list" class="activity-list"></div>
+        <p class="disclaimer">Calorie burn varies with fitness, pace, terrain and individual physiology. Estimates are for guidance; this website does not automatically sync Apple Health, Health Connect or wearable devices.</p>
+      </section>
+
+      <section class="page" id="page-progress">
+        <div class="page-title-row"><div><p class="eyebrow">PROGRESS OVER PERFECTION</p><h1>Your progress</h1><p class="muted">Watch your own trends over time, without judgement.</p></div></div>
+        <div class="progress-overview"><div class="progress-stat"><span class="card-kicker">LATEST WEIGHT</span><strong id="latest-weight">— <small>kg</small></strong><p id="weight-change-copy">Add your first check-in</p></div><div class="progress-stat"><span class="card-kicker">GOAL WEIGHT</span><strong id="goal-weight-view">— <small>kg</small></strong><p id="goal-distance-copy">Set a goal in your profile</p></div><div class="progress-stat"><span class="card-kicker">CHECK-INS</span><strong id="weight-count">0</strong><p>weight entries saved</p></div></div>
+        <div class="chart-card"><div class="chart-title"><div><h2>Weight over time</h2><p>Each dot is one of your recorded check-ins.</p></div><span class="chart-unit">kg</span></div><div id="weight-chart" class="weight-chart"><div class="chart-empty">Record your weight to see your trend here.</div></div></div>
+        <div class="form-card weight-form-card"><div class="form-heading"><div class="small-icon green">⌁</div><div><h2>Weight check-in</h2><p>Use similar conditions each time for a more useful trend.</p></div></div><form id="weight-form" class="inline-form"><label class="field">Weight (kg)<input type="number" name="weight_kg" min="20" max="499" step=".1" placeholder="e.g. 72.5" required></label><button type="submit" class="primary-button">Save weight</button></form></div>
+        <div class="section-head"><div><p class="eyebrow">YOUR HISTORY</p><h2>Recent check-ins</h2></div></div><div id="weight-history" class="history-list"></div>
+      </section>
+
+      <section class="page" id="page-profile">
+        <div class="page-title-row"><div><p class="eyebrow">PERSONALISE YOUR TRACKING</p><h1>Your profile</h1><p class="muted">A few details make your daily energy estimate more useful.</p></div></div>
+        <div class="profile-tip"><span class="tip-star">✳</span><p><strong>Your data, your pace.</strong><br>Measurements are used to estimate energy needs and customise your goals. Estimates are not a diagnosis or a prescribed diet.</p></div>
+        <div class="form-card profile-form-card"><form id="profile-form" class="form-grid">
+          <label class="field full-field">What should we call you?<input name="display_name" maxlength="80" placeholder="Your name"></label>
+          <div class="field full-field field-section-label">ABOUT YOU</div>
+          <label class="field">Age (years)<input name="age" type="number" min="13" max="110" placeholder="Age"></label>
+          <label class="field">Sex used for equation<select name="sex"><option value="unspecified">Prefer not to say</option><option value="female">Female</option><option value="male">Male</option></select></label>
+          <label class="field">Height (cm)<input name="height_cm" type="number" min="80" max="250" step=".1" placeholder="Height"></label>
+          <label class="field">Current weight (kg)<input name="weight_kg" type="number" min="20" max="499" step=".1" placeholder="Weight"></label>
+          <label class="field">Goal weight (kg)<input name="goal_weight_kg" type="number" min="20" max="499" step=".1" placeholder="Optional"></label>
+          <label class="field">Everyday activity<select name="activity_factor"><option value="1.2">Mostly sitting (1.20)</option><option value="1.35" selected>Lightly active (1.35)</option><option value="1.5">Moderately active (1.50)</option><option value="1.7">Very active (1.70)</option><option value="1.9">Extremely active (1.90)</option></select></label>
+          <div class="field full-field field-section-label">YOUR DAILY GOALS</div>
+          <label class="field">Calorie intake goal (kcal)<input name="daily_calorie_goal" type="number" min="500" max="10000" step="25" required></label>
+          <label class="field">Water goal (ml)<input name="water_goal_ml" type="number" min="250" max="10000" step="250" required></label>
+          <label class="field">Protein goal (g)<input name="protein_goal" type="number" min="0" max="1000" step="5" required></label>
+          <label class="field">Carbohydrate goal (g)<input name="carbs_goal" type="number" min="0" max="1000" step="5" required></label>
+          <label class="field">Fat goal (g)<input name="fat_goal" type="number" min="0" max="1000" step="5" required></label>
+          <p class="field-hint full-field">Your baseline activity setting should represent normal daily movement, not this workout's calories. Logged exercise is added separately to avoid counting it twice.</p>
+          <button type="submit" class="primary-button full-field">Save my profile</button>
+        </form></div>
+        <div class="disclaimer">CalorieTrack AI is a personal tracking tool, not medical advice. If you have a medical condition, are pregnant, or have specific nutrition needs, consult a qualified healthcare professional.</div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="bottom-nav" aria-label="Mobile navigation">
+    <button class="bottom-item active" data-page-link="home"><span>◫</span><small>Home</small></button>
+    <button class="bottom-item" data-page-link="diary"><span>☷</span><small>Diary</small></button>
+    <button class="bottom-add" id="bottom-add" aria-label="Add food">＋</button>
+    <button class="bottom-item" data-page-link="activity"><span>↗</span><small>Activity</small></button>
+    <button class="bottom-item" data-page-link="progress"><span>⌁</span><small>Progress</small></button>
+  </nav>
+
+  <dialog id="food-dialog" class="food-dialog">
+    <div class="dialog-header"><div><p class="eyebrow">A GOOD PLACE TO START</p><h2>Log your food</h2></div><button class="close-dialog" id="close-food-dialog" aria-label="Close">×</button></div>
+    <div class="food-search-wrap"><span>⌕</span><input id="food-search" type="search" placeholder="Search idli, dosa, இட்லி..." autocomplete="off" aria-label="Search Indian foods"></div>
+    <div class="search-filters"><button class="filter-chip active" data-food-category="">All foods</button><button class="filter-chip" data-food-category="South Indian">South Indian</button><button class="filter-chip" data-food-category="North Indian">North Indian</button><button class="filter-chip" data-food-category="Street food">Street food</button></div>
+    <div id="food-results" class="food-results"><div class="empty-search">Search a food to get started.</div></div>
+    <form id="log-food-form" class="log-food-form hidden">
+      <div class="selected-food-row"><div><span class="eyebrow">SELECTED FOOD</span><h3 id="selected-food-name">—</h3><p id="selected-food-serving">Per serving</p></div><strong id="selected-food-kcal">0 kcal</strong></div>
+      <div class="form-grid compact-grid"><label class="field">Meal<select name="meal"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snacks</option></select></label><label class="field">Servings<input name="quantity" type="number" min=".1" max="100" step=".1" value="1" required></label></div>
+      <p id="portion-preview" class="portion-preview">1 serving · 0 kcal</p><button type="submit" class="primary-button log-submit">Add to diary</button>
+      <button type="button" id="change-selected-food" class="cancel-link">Choose another food</button>
+    </form>
+    <div class="dialog-footer"><span>Values marked as estimates may differ from your actual recipe.</span><button type="button" id="show-custom-food" class="text-link">＋ Create custom food</button></div>
+    <form id="custom-food-form" class="custom-food-form hidden">
+      <div class="custom-form-title"><h3>Add your own food</h3><button type="button" class="cancel-link" id="cancel-custom-food">Back to search</button></div>
+      <div class="form-grid compact-grid">
+        <label class="field full-field">Food name<input name="name" required maxlength="100" placeholder="e.g. Homemade vegetable kurma"></label>
+        <label class="field">Serving weight (g)<input name="serving_grams" type="number" min=".1" max="5000" value="100" required></label>
+        <label class="field">Calories (kcal)<input name="calories" type="number" min="0" max="10000" required></label>
+        <label class="field">Protein (g)<input name="protein" type="number" min="0" max="1000" value="0" required></label>
+        <label class="field">Carbs (g)<input name="carbs" type="number" min="0" max="1000" value="0" required></label>
+        <label class="field">Fat (g)<input name="fat" type="number" min="0" max="1000" value="0" required></label>
+        <label class="field">Fibre (g)<input name="fiber" type="number" min="0" max="1000" value="0" required></label>
+      </div>
+      <button type="submit" class="primary-button log-submit">Save custom food</button>
+      <p class="field-hint">These are user-entered values. Check your label or recipe for accuracy.</p>
+    </form>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>
