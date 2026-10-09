@@ -5,3 +5,35 @@ tagline = "Indian food. Real-life tracking."
 enabled = true
 providers = ["email"]
 signup = "open"
+
+[db.tables.activity_logs]
+read = "own"
+write = "own"
+
+[db.tables.food_catalog]
+read = "public"
+write = "own"
+
+[db.tables.food_logs]
+read = "own"
+write = "own"
+
+[db.tables.profiles]
+read = "own"
+write = "own"
+
+[db.tables.water_logs]
+read = "own"
+write = "own"
+
+[db.tables.weight_logs]
+read = "own"
+write = "own"
+
+[db.tables.recipes]
+read = "own"
+write = "own"
+
+[db.tables.recipe_ingredients]
+read = "own"
+write = "own"

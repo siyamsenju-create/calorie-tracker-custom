@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS idx_recipe_ingredients_owner ON recipe_ingredients(user_id,recipe_id);

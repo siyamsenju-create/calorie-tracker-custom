@@ -4,7 +4,7 @@
   const $ = (s, root=document) => root.querySelector(s);
   const $$ = (s, root=document) => Array.from(root.querySelectorAll(s));
   let selectedDate = localDate();
-  let dashboard = null, foodsShown = [], selectedFood = null, activeCategory = "", toastTimer = null, searchSequence = 0;
+  let dashboard = null, foodsShown = [], selectedFood = null, activeCategory = "", activeDiet = "", recipeMode = false, recipeIngredients = [], toastTimer = null, searchSequence = 0;
   function localDate(d=new Date()) { return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
   function dateObj(v) { const a=String(v||"").split("-").map(Number); return new Date(a[0],a[1]-1,a[2]||1); }
   function prettyDate(v) { const d=dateObj(v); return d.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}); }
@@ -145,7 +145,8 @@
   function mealAtNow() { const h=new Date().getHours(); return h<11?"Breakfast":h<15?"Lunch":h<19?"Snacks":"Dinner"; }
   function openFoodDialog(meal) {
     const d=$("#food-dialog"); if(meal) $("#log-food-form").elements.meal.value=meal;
-    $("#food-search").value=""; $("#log-food-form").classList.add("hidden"); $("#custom-food-form").classList.add("hidden"); $("#food-results").classList.remove("hidden");
+    recipeMode=false; recipeIngredients=[]; activeCategory=""; activeDiet=""; $$(".filter-chip").forEach(x=>x.classList.remove("active")); $('[data-food-category=""]').classList.add("active");
+    $("#food-search").value=""; $("#log-food-form").classList.add("hidden"); $("#custom-food-form").classList.add("hidden"); $("#recipe-form").classList.add("hidden"); $("#food-results").classList.remove("hidden");
     selectedFood=null; searchFoods("");
     if(!$("#food-dialog").open) d.showModal();
     setTimeout(()=>$("#food-search").focus(),80);
@@ -154,7 +155,7 @@
   async function searchFoods(term) {
     const id=++searchSequence, box=$("#food-results"); box.innerHTML='<div class="loading">Finding your food…</div>';
     try {
-      const data=await api("/foods?q="+encodeURIComponent(term||"")+"&category="+encodeURIComponent(activeCategory));
+      const data=await api("/foods?q="+encodeURIComponent(term||"")+"&category="+encodeURIComponent(activeCategory)+"&diet="+encodeURIComponent(activeDiet));
       if(id!==searchSequence)return;
       foodsShown=data.foods||[];
       if(!foodsShown.length) { box.innerHTML='<div class="empty-search">No matching food found. Try another name or add a custom food.</div>'; return; }
@@ -162,6 +163,7 @@
     } catch(e) { if(id===searchSequence)box.innerHTML='<div class="empty-search">'+esc(e.message)+'</div>'; }
   }
   function selectFood(food) {
+    if(recipeMode) { recipeIngredients.push({food:food,quantity:1}); renderRecipeIngredients(); $("#recipe-form").classList.remove("hidden"); $("#food-results").classList.remove("hidden"); toast("Added "+food.name+" as an ingredient."); $("#recipe-form").scrollIntoView({behavior:"smooth",block:"nearest"}); return; }
     selectedFood=food; $("#selected-food-name").textContent=food.name; $("#selected-food-serving").textContent=(food.serving_label||"1 serving")+" · "+num(food.serving_grams)+" g";
     $("#selected-food-kcal").textContent=num(food.calories)+" kcal per serving";
     $("#log-food-form").classList.remove("hidden"); $("#custom-food-form").classList.add("hidden");
@@ -191,7 +193,27 @@
       $("#log-food-form").elements.meal.value=mealAtNow();
     } catch(e) { toast(e.message,true); } finally { setBusy(form,false); }
   }
-  async function addWater(amount) {
+  function renderRecipeIngredients() {
+    const box=$("#recipe-ingredient-list"), form=$("#recipe-form");
+    if(!recipeIngredients.length) box.innerHTML='<div class="recipe-empty">No ingredients yet. Add the foods and cooking oil or ghee used in the recipe.</div>';
+    else box.innerHTML=recipeIngredients.map((item,index)=>'<div class="recipe-ingredient-row"><div><strong>'+esc(item.food.name)+'</strong><small>'+esc(item.food.serving_label||"1 serving")+' · '+num(item.food.calories)+' kcal</small></div><input type="number" min=".1" max="100" step=".1" value="'+esc(item.quantity)+'" data-recipe-qty="'+index+'" aria-label="Quantity of '+esc(item.food.name)+'"><button type="button" data-remove-ingredient="'+index+'" aria-label="Remove '+esc(item.food.name)+'">×</button></div>').join("");
+    const servings=Math.max(.1,Number(form.elements.servings.value)||1);
+    const totals=recipeIngredients.reduce((a,x)=>{const q=Number(x.quantity)||0, f=x.food;a.grams+=Number(f.serving_grams)*q;a.calories+=Number(f.calories)*q;a.protein+=Number(f.protein)*q;a.carbs+=Number(f.carbs)*q;a.fat+=Number(f.fat)*q;a.fiber+=Number(f.fiber)*q;return a;},{grams:0,calories:0,protein:0,carbs:0,fat:0,fiber:0});
+    $("#recipe-nutrition-preview").innerHTML=recipeIngredients.length?'<strong>~'+num(totals.calories/servings)+' kcal per serving</strong><br>'+grams(totals.grams/servings)+' g per serving · '+grams(totals.protein/servings)+' g protein · '+grams(totals.carbs/servings)+' g carbs · '+grams(totals.fat/servings)+' g fat':'Add ingredients to calculate nutrition per serving.';
+  }
+  async function saveRecipe(event) {
+    event.preventDefault(); if(!recipeIngredients.length){toast("Add at least one ingredient first.",true);return;}
+    const form=event.currentTarget,b=new FormData(form), body={name:b.get("name"),servings:Number(b.get("servings")),ingredients:recipeIngredients.map(x=>({food_id:x.food.id,quantity:Number(x.quantity)}))};
+    setBusy(form,true);
+    try {
+      const data=await api("/recipes",{method:"POST",body});
+      recipeMode=false;recipeIngredients=[];form.reset();form.elements.servings.value=4;
+      $("#recipe-form").classList.add("hidden");$("#food-results").classList.add("hidden");
+      selectedFood=data.food;selectFood(data.food);
+      toast("Recipe saved. Review its estimated serving nutrition before logging.");
+    } catch(e) { toast(e.message,true); } finally { setBusy(form,false); }
+  }
+    async function addWater(amount) {
     try { await api("/water",{method:"POST",body:{amount_ml:amount,log_date:selectedDate}}); await loadDashboard(); toast("Added "+num(amount)+" ml of water."); }
     catch(e) { toast(e.message,true); }
   }
@@ -242,12 +264,20 @@
   $("#close-food-dialog").addEventListener("click",closeFoodDialog);
   $("#food-dialog").addEventListener("click",e=>{if(e.target===$("#food-dialog"))closeFoodDialog();});
   $("#food-search").addEventListener("input",e=>{activeCategory=$(".filter-chip.active")?.dataset.foodCategory||""; searchFoods(e.target.value.trim());});
-  $$(".filter-chip").forEach(b=>b.addEventListener("click",()=>{$$(".filter-chip").forEach(x=>x.classList.toggle("active",x===b));activeCategory=b.dataset.foodCategory||"";searchFoods($("#food-search").value.trim());}));
+  $$(".filter-chip:not(.diet-chip)").forEach(b=>b.addEventListener("click",()=>{$$(".filter-chip:not(.diet-chip)").forEach(x=>x.classList.toggle("active",x===b));activeCategory=b.dataset.foodCategory||"";searchFoods($("#food-search").value.trim());}));
+  $$(".diet-chip").forEach(b=>b.addEventListener("click",()=>{if(activeDiet===b.dataset.foodDiet){activeDiet="";$$(".diet-chip").forEach(x=>x.classList.remove("active"));}else{activeDiet=b.dataset.foodDiet;$$(".diet-chip").forEach(x=>x.classList.toggle("active",x===b));}searchFoods($("#food-search").value.trim());}));
   $("#food-results").addEventListener("click",e=>{const b=e.target.closest("[data-select-food]");if(!b)return;const f=foodsShown.find(x=>x.id===b.dataset.selectFood);if(f)selectFood(f);});
   $("#log-food-form").addEventListener("submit",saveFood);
   $("#log-food-form").elements.quantity.addEventListener("input",updatePortionPreview);
   $("#change-selected-food").addEventListener("click",()=>{$("#log-food-form").classList.add("hidden");$("#food-results").classList.remove("hidden");selectedFood=null;});
-  $("#show-custom-food").addEventListener("click",()=>{$("#custom-food-form").classList.remove("hidden");$("#log-food-form").classList.add("hidden");$("#food-results").classList.add("hidden");$("#custom-food-form").scrollIntoView({behavior:"smooth",block:"nearest"});});
+  $("#show-custom-food").addEventListener("click",()=>{recipeMode=false;recipeIngredients=[];$("#recipe-form").classList.add("hidden");$("#custom-food-form").classList.remove("hidden");$("#log-food-form").classList.add("hidden");$("#food-results").classList.add("hidden");$("#custom-food-form").scrollIntoView({behavior:"smooth",block:"nearest"});});
+  $("#show-recipe-form").addEventListener("click",()=>{recipeMode=true;recipeIngredients=[];selectedFood=null;$("#custom-food-form").classList.add("hidden");$("#log-food-form").classList.add("hidden");$("#food-results").classList.add("hidden");$("#recipe-form").reset();$("#recipe-form").elements.servings.value=4;$("#recipe-form").classList.remove("hidden");renderRecipeIngredients();$("#recipe-form").scrollIntoView({behavior:"smooth",block:"nearest"});});
+  $("#add-recipe-ingredient").addEventListener("click",()=>{if($("#food-results").classList.contains("hidden")){activeCategory="";activeDiet="";$$(".filter-chip").forEach(x=>x.classList.remove("active"));$$(".filter-chip:not(.diet-chip)").find(x=>x.dataset.foodCategory==="").classList.add("active");$("#food-search").value="";$("#food-results").classList.remove("hidden");searchFoods("");$("#food-results").scrollIntoView({behavior:"smooth",block:"nearest"});}else{$("#food-results").classList.add("hidden");}});
+  $("#cancel-recipe").addEventListener("click",()=>{recipeMode=false;recipeIngredients=[];$("#recipe-form").classList.add("hidden");$("#food-results").classList.remove("hidden");});
+  $("#recipe-ingredient-list").addEventListener("change",e=>{const el=e.target.closest("[data-recipe-qty]");if(!el)return;const i=Number(el.dataset.recipeQty);if(recipeIngredients[i]){recipeIngredients[i].quantity=Number(el.value)||0.1;renderRecipeIngredients();}});
+  $("#recipe-ingredient-list").addEventListener("click",e=>{const el=e.target.closest("[data-remove-ingredient]");if(!el)return;recipeIngredients.splice(Number(el.dataset.removeIngredient),1);renderRecipeIngredients();});
+  $("#recipe-form").elements.servings.addEventListener("input",renderRecipeIngredients);
+  $("#recipe-form").addEventListener("submit",saveRecipe);
   $("#cancel-custom-food").addEventListener("click",()=>{$("#custom-food-form").classList.add("hidden");$("#food-results").classList.remove("hidden");});
   $("#custom-food-form").addEventListener("submit",saveCustomFood);
   $("#home-meals").addEventListener("click",e=>{const b=e.target.closest("[data-add-meal]");if(b)openFoodDialog(b.dataset.addMeal);});

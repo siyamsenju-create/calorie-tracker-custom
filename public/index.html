@@ -145,7 +145,7 @@
   <dialog id="food-dialog" class="food-dialog">
     <div class="dialog-header"><div><p class="eyebrow">A GOOD PLACE TO START</p><h2>Log your food</h2></div><button class="close-dialog" id="close-food-dialog" aria-label="Close">×</button></div>
     <div class="food-search-wrap"><span>⌕</span><input id="food-search" type="search" placeholder="Search idli, dosa, இட்லி..." autocomplete="off" aria-label="Search Indian foods"></div>
-    <div class="search-filters"><button class="filter-chip active" data-food-category="">All foods</button><button class="filter-chip" data-food-category="South Indian">South Indian</button><button class="filter-chip" data-food-category="North Indian">North Indian</button><button class="filter-chip" data-food-category="Street food">Street food</button></div>
+    <div class="search-filters"><button class="filter-chip active" data-food-category="">All foods</button><button class="filter-chip" data-food-category="South Indian">South Indian</button><button class="filter-chip" data-food-category="North Indian">North Indian</button><button class="filter-chip" data-food-category="Street food">Street food</button><button class="filter-chip diet-chip" data-food-diet="vegetarian">Vegetarian</button><button class="filter-chip diet-chip" data-food-diet="non-vegetarian">Non-veg</button><button class="filter-chip diet-chip" data-food-diet="vegan">Vegan</button></div>
     <div id="food-results" class="food-results"><div class="empty-search">Search a food to get started.</div></div>
     <form id="log-food-form" class="log-food-form hidden">
       <div class="selected-food-row"><div><span class="eyebrow">SELECTED FOOD</span><h3 id="selected-food-name">—</h3><p id="selected-food-serving">Per serving</p></div><strong id="selected-food-kcal">0 kcal</strong></div>
@@ -153,7 +153,7 @@
       <p id="portion-preview" class="portion-preview">1 serving · 0 kcal</p><button type="submit" class="primary-button log-submit">Add to diary</button>
       <button type="button" id="change-selected-food" class="cancel-link">Choose another food</button>
     </form>
-    <div class="dialog-footer"><span>Values marked as estimates may differ from your actual recipe.</span><button type="button" id="show-custom-food" class="text-link">＋ Create custom food</button></div>
+    <div class="dialog-footer"><span>Values marked as estimates may differ from your actual recipe.</span><div class="dialog-actions"><button type="button" id="show-custom-food" class="text-link">＋ Custom food</button><button type="button" id="show-recipe-form" class="text-link">＋ Recipe</button></div></div>
     <form id="custom-food-form" class="custom-food-form hidden">
       <div class="custom-form-title"><h3>Add your own food</h3><button type="button" class="cancel-link" id="cancel-custom-food">Back to search</button></div>
       <div class="form-grid compact-grid">
@@ -168,6 +168,19 @@
       <button type="submit" class="primary-button log-submit">Save custom food</button>
       <p class="field-hint">These are user-entered values. Check your label or recipe for accuracy.</p>
     </form>
+  <form id="recipe-form" class="custom-food-form hidden">
+    <div class="custom-form-title"><h3>Create a family recipe</h3><button type="button" class="cancel-link" id="cancel-recipe">Back to search</button></div>
+    <div class="form-grid compact-grid">
+      <label class="field full-field">Recipe name<input name="name" required maxlength="100" placeholder="e.g. Amma's vegetable kurma"></label>
+      <label class="field">Number of servings<input name="servings" type="number" min=".1" max="100" step=".1" value="4" required></label>
+      <div class="field"><span>Ingredient units</span><span class="field-hint">Choose foods from the catalogue, then set each quantity in catalogue servings.</span></div>
+    </div>
+    <div class="recipe-toolbar"><strong>Ingredients</strong><button type="button" id="add-recipe-ingredient" class="subtle-button">＋ Find an ingredient</button></div>
+    <div id="recipe-ingredient-list" class="recipe-ingredient-list"><div class="recipe-empty">No ingredients yet. Add the foods and cooking oil or ghee used in the recipe.</div></div>
+    <div id="recipe-nutrition-preview" class="recipe-preview">Add ingredients to calculate nutrition per serving.</div>
+    <button type="submit" class="primary-button log-submit">Save recipe and nutrition</button>
+    <p class="field-hint">Nutrition is calculated from listed catalogue ingredients divided by the number of servings. Unlisted oil, ghee, sugar or toppings won't be counted.</p>
+  </form>
   </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="/app.js" defer></script>
