@@ -4,7 +4,7 @@
   const $ = (s, root=document) => root.querySelector(s);
   const $$ = (s, root=document) => Array.from(root.querySelectorAll(s));
   let selectedDate = localDate();
-  let dashboard = null, foodsShown = [], selectedFood = null, activeCategory = "", activeDiet = "", recipeMode = false, recipeIngredients = [], toastTimer = null, searchSequence = 0;
+  let dashboard = null, foodsShown = [], selectedFood = null, editingEntry = null, activeCategory = "", activeDiet = "", recipeMode = false, recipeIngredients = [], toastTimer = null, searchSequence = 0;
   function localDate(d=new Date()) { return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
   function dateObj(v) { const a=String(v||"").split("-").map(Number); return new Date(a[0],a[1]-1,a[2]||1); }
   function prettyDate(v) { const d=dateObj(v); return d.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}); }
@@ -58,7 +58,7 @@
     const meals=[["Breakfast","☼","breakfast"],["Lunch","◒","lunch"],["Dinner","☾","dinner"],["Snacks","✳","snacks"]];
     target.innerHTML=meals.map(([meal,icon,cls])=>{
       const entries=items.filter(f=>f.meal===meal), total=entries.reduce((s,f)=>s+Number(f.calories),0);
-      const content=entries.length?entries.map(f=>'<div class="meal-entry"><div><div class="food-name">'+esc(f.food_name)+'</div><span class="food-description">'+grams(f.quantity)+' × serving · '+num(f.grams)+' g</span></div><div class="entry-kcal">'+num(f.calories)+' kcal</div><button class="delete-entry" data-delete-food="'+esc(f.id)+'" aria-label="Delete '+esc(f.food_name)+'" title="Remove entry">×</button></div>').join(''):'<div class="empty-meal">Nothing logged here yet.'+(target.id==="home-meals"?' <button data-add-meal="'+meal+'">＋ Add to '+meal.toLowerCase()+'</button>':'')+'</div>';
+      const content=entries.length?entries.map(f=>'<div class="meal-entry"><div><div class="food-name">'+esc(f.food_name)+'</div><span class="food-description">'+grams(f.quantity)+' × serving · '+num(f.grams)+' g</span></div><div class="entry-kcal">'+num(f.calories)+' kcal</div><div class="entry-actions"><button class="edit-entry" data-edit-food="'+esc(f.id)+'" aria-label="Edit '+esc(f.food_name)+'" title="Edit entry">✎</button><button class="delete-entry" data-delete-food="'+esc(f.id)+'" aria-label="Delete '+esc(f.food_name)+'" title="Remove entry">×</button></div></div>').join(''):'<div class="empty-meal">Nothing logged here yet.'+(target.id==="home-meals"?' <button data-add-meal="'+meal+'">＋ Add to '+meal.toLowerCase()+'</button>':'')+'</div>';
       return '<article class="meal-card"><div class="meal-card-header"><div class="meal-title-group"><span class="meal-icon '+cls+'">'+icon+'</span><div><strong>'+meal+'</strong><small>'+entries.length+' item'+(entries.length===1?'':'s')+'</small></div></div><div class="meal-calories"><strong>'+num(total)+' kcal</strong><small>'+ (entries.length?'logged':'not logged')+'</small></div></div>'+content+'</article>';
     }).join('');
   }
@@ -144,7 +144,7 @@
   }
   function mealAtNow() { const h=new Date().getHours(); return h<11?"Breakfast":h<15?"Lunch":h<19?"Snacks":"Dinner"; }
   function openFoodDialog(meal) {
-    const d=$("#food-dialog"); if(meal) $("#log-food-form").elements.meal.value=meal;
+    const d=$("#food-dialog"); editingEntry=null; if(meal) $("#log-food-form").elements.meal.value=meal;
     recipeMode=false; recipeIngredients=[]; activeCategory=""; activeDiet=""; $$(".filter-chip").forEach(x=>x.classList.remove("active")); $('[data-food-category=""]').classList.add("active");
     $("#food-search").value=""; $("#log-food-form").classList.add("hidden"); $("#custom-food-form").classList.add("hidden"); $("#recipe-form").classList.add("hidden"); $("#food-results").classList.remove("hidden");
     selectedFood=null; searchFoods("");
@@ -167,7 +167,8 @@
     selectedFood=food; $("#selected-food-name").textContent=food.name; $("#selected-food-serving").textContent=(food.serving_label||"1 serving")+" · "+num(food.serving_grams)+" g";
     $("#selected-food-kcal").textContent=num(food.calories)+" kcal per serving";
     $("#log-food-form").classList.remove("hidden"); $("#custom-food-form").classList.add("hidden");
-    $("#log-food-form").elements.quantity.value="1"; $("#log-food-form").elements.meal.value=mealAtNow();
+    $("#log-food-form").elements.quantity.value=editingEntry?editingEntry.quantity:"1"; $("#log-food-form").elements.meal.value=editingEntry?editingEntry.meal:mealAtNow();
+    $("#log-food-form").querySelector("button[type=submit]").textContent=editingEntry?"Save changes":"Add to diary";
     updatePortionPreview(); $("#log-food-form").scrollIntoView({behavior:"smooth",block:"nearest"});
   }
   function updatePortionPreview() {
@@ -177,9 +178,10 @@
   }
   async function saveFood(event) {
     event.preventDefault(); if(!selectedFood)return;
-    const form=event.currentTarget, b=new FormData(form), body={food_id:selectedFood.id,quantity:Number(b.get("quantity")),meal:b.get("meal"),log_date:selectedDate};
+    const form=event.currentTarget, b=new FormData(form), wasEdit=Boolean(editingEntry), foodName=selectedFood.name, body={food_id:selectedFood.id,quantity:Number(b.get("quantity")),meal:b.get("meal"),log_date:selectedDate};
+    if(wasEdit) body.id=editingEntry.id;
     setBusy(form,true);
-    try { await api("/diary",{method:"POST",body}); closeFoodDialog(); await loadDashboard(); toast("Added "+selectedFood.name+" to your diary."); }
+    try { await api("/diary",{method:wasEdit?"PUT":"POST",body}); closeFoodDialog(); editingEntry=null; await loadDashboard(); toast((wasEdit?"Updated ":"Added ")+foodName+(wasEdit?" in your diary.":" to your diary.")); }
     catch(e) { toast(e.message,true); } finally { setBusy(form,false); }
   }
   async function saveCustomFood(event) {
@@ -217,7 +219,23 @@
     try { await api("/water",{method:"POST",body:{amount_ml:amount,log_date:selectedDate}}); await loadDashboard(); toast("Added "+num(amount)+" ml of water."); }
     catch(e) { toast(e.message,true); }
   }
-  async function deleteFood(id) {
+  async function editFoodEntry(id) {
+    const entry=(dashboard?.foods||[]).find(f=>f.id===id);
+    if(!entry) { toast("That diary entry is no longer available.",true); return; }
+    openFoodDialog(entry.meal);
+    editingEntry=entry;
+    $("#food-search").value=entry.food_name;
+    await searchFoods(entry.food_name);
+    const food=foodsShown.find(f=>f.id===entry.food_id) || foodsShown.find(f=>f.name===entry.food_name);
+    if(!food) { editingEntry=null; toast("This food is no longer available to edit.",true); return; }
+    selectFood(food);
+    $("#log-food-form").elements.quantity.value=entry.quantity;
+    $("#log-food-form").elements.meal.value=entry.meal;
+    $("#log-food-form").querySelector("button[type=submit]").textContent="Save changes";
+    $("#selected-food-name").textContent=entry.food_name;
+    updatePortionPreview();
+  }
+    async function deleteFood(id) {
     if(!confirm("Remove this food entry from your diary?"))return;
     try { await api("/diary",{method:"DELETE",body:{id}}); await loadDashboard(); toast("Food entry removed."); }
     catch(e) { toast(e.message,true); }
@@ -281,8 +299,8 @@
   $("#cancel-custom-food").addEventListener("click",()=>{$("#custom-food-form").classList.add("hidden");$("#food-results").classList.remove("hidden");});
   $("#custom-food-form").addEventListener("submit",saveCustomFood);
   $("#home-meals").addEventListener("click",e=>{const b=e.target.closest("[data-add-meal]");if(b)openFoodDialog(b.dataset.addMeal);});
-  $("#diary-meals").addEventListener("click",e=>{const b=e.target.closest("[data-delete-food]");if(b)deleteFood(b.dataset.deleteFood);});
-  $("#home-meals").addEventListener("click",e=>{const b=e.target.closest("[data-delete-food]");if(b)deleteFood(b.dataset.deleteFood);});
+  $("#diary-meals").addEventListener("click",e=>{const edit=e.target.closest("[data-edit-food]");if(edit){editFoodEntry(edit.dataset.editFood);return;}const b=e.target.closest("[data-delete-food]");if(b)deleteFood(b.dataset.deleteFood);});
+  $("#home-meals").addEventListener("click",e=>{const edit=e.target.closest("[data-edit-food]");if(edit){editFoodEntry(edit.dataset.editFood);return;}const b=e.target.closest("[data-delete-food]");if(b)deleteFood(b.dataset.deleteFood);});
   $("#activity-list").addEventListener("click",e=>{const b=e.target.closest("[data-delete-activity]");if(b)deleteActivity(b.dataset.deleteActivity);});
   $$("[data-water]").forEach(b=>b.addEventListener("click",()=>addWater(Number(b.dataset.water))));
   $("#activity-form").addEventListener("submit",saveActivity);
